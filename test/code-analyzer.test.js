@@ -104,4 +104,15 @@ describe('The javascript parser',() => {
             '}\n'));
         assert(JSON.stringify(arr) === '[{"Line":"1","Type":"If Statement","Name":"","Condition":"(0<5)","Value":""},{"Line":"2","Type":"Variable Declaration","Name":"x","Condition":"","Value":7},{"Line":"5","Type":"If Statement","Name":"","Condition":"(0<5)","Value":""},{"Line":"6","Type":"Variable Declaration","Name":"x","Condition":"","Value":7},{"Line":"8","Type":"Else If Statement","Name":"","Condition":"(0<5)","Value":""},{"Line":"9","Type":"Variable Declaration","Name":"x","Condition":"","Value":7}]');
     });
+    it('update', () => {
+        program(parseCode('let x = x++;\n' +
+            'x++;\n' +
+            'x = ++x;\n' +
+            '++x;'));
+        assert(JSON.stringify(arr) === '[{"Line":"1","Type":"Variable Declaration","Name":"x","Condition":"","Value":"x++"},{"Line":"2","Type":"UpdateExpression","Name":"","Condition":"","Value":"x++"},{"Line":"3","Type":"Assignment Expression","Name":"x","Condition":"","Value":"++x"},{"Line":"4","Type":"UpdateExpression","Name":"","Condition":"","Value":"++x"}]');
+    });
+    it('arr.length', () => {
+        program(parseCode('let z = arr.length'));
+        assert(JSON.stringify(arr) === '[{"Line":"1","Type":"Variable Declaration","Name":"z","Condition":"","Value":"arr.length"}]');
+    });
 });

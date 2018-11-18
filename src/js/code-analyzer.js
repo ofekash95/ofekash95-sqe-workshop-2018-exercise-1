@@ -18,7 +18,8 @@ function objMap (nextObj) {
     let handlers = {'VariableDeclaration' : varDec, 'FunctionDeclaration' : funcDec,
         'ExpressionStatement': expressionStatement, 'ReturnStatement' : returnStatement, 'IfStatement' : ifStatement,
         'WhileStatement' : whileStatement, 'ForStatement' : forStatement, 'BlockStatement' : blockStatement,
-        'SequenceExpression' : sequenceExpression, 'AssignmentExpression' : assignmentExpression};
+        'SequenceExpression' : sequenceExpression, 'AssignmentExpression' : assignmentExpression,
+        'UpdateExpression' : updateExpression};
     if(handlers[nextObj.type] === undefined)
         return;
     else
@@ -65,6 +66,18 @@ function expressionStatement(obj){
     objMap(obj.expression);
 }
 
+function updateExpression(obj){
+    let line = getLine(obj), op = obj.operator, val = getVal(obj.argument), prefix = obj.prefix,
+        type = 'UpdateExpression';
+    val = prefix ? op.concat(val.toString()) : val.toString().concat(op);
+    addToTable(line, type, '', '', val);
+}
+
+function updateExpressionForVal(obj){
+    let op = obj.operator, val = getVal(obj.argument), prefix = obj.prefix;
+    return prefix ? op.concat(val.toString()) : val.toString().concat(op);
+}
+
 function sequenceExpression(obj){
     for(let i = 0; i < obj.expressions.length; ++i)
         objMap(obj.expressions[i]);
@@ -107,10 +120,9 @@ function callExpression(exp){
 }
 
 function memberExpression(obj){
-    let object, property;
-    object = getVal(obj.object);
-    property = getVal(obj.property);
-    return object.toString().concat('[').concat(property.toString()).concat(']');
+    let object = getVal(obj.object), property = getVal(obj.property), computed = obj.computed;
+    return computed ? object.toString().concat('[').concat(property.toString()).concat(']') :
+        object.toString().concat('.').concat(property.toString());
 }
 
 function ifStatement(obj){
@@ -171,7 +183,8 @@ function logicalExpression(exp){
 function getVal(obj){
     let handlers = { 'Literal' : literal, 'Identifier' : identifier, 'UnaryExpression' : unaryExpression,
         'BinaryExpression' : binaryExpression, 'CallExpression' : callExpression,
-        'LogicalExpression' : logicalExpression, 'MemberExpression' : memberExpression};
+        'LogicalExpression' : logicalExpression, 'MemberExpression' : memberExpression,
+        'UpdateExpression' : updateExpressionForVal};
     return handlers[obj.type](obj);
 }
 
