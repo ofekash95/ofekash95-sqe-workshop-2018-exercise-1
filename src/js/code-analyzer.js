@@ -6,6 +6,7 @@ const parseCode = (codeToParse) => {
 
 export {parseCode};
 export {program};
+export {displayTable};
 export {arr};
 
 let arr = [];
@@ -26,7 +27,7 @@ function displayTable(){
         tableBody.appendChild(addTuple(arr[i]));
     table.appendChild(tableBody);
     body.appendChild(table);
-    arr = [];
+    window.alert(JSON.stringify(arr));
 }
 
 function addTuple(tuple){
@@ -63,18 +64,20 @@ function objMap (nextObj) {
 }
 
 function program(obj) {
+    arr = [];
     for(let i = 0; i < obj.body.length; ++i)
         objMap(obj.body[i]);
-    displayTable();
 }
 
 
 function varDec(obj){
-    let line, name, type = 'Variable Declaration';
+    let line, name, val, type = 'Variable Declaration';
     for(let i = 0; i < obj.declarations.length; ++i){
-        line = getLine(obj.declarations[i].id);
-        name = obj.declarations[i].id.name;
-        addToTable(line, type, name, '', '');
+        let nextObj = obj.declarations[i];
+        line = getLine(nextObj.id);
+        name = nextObj.id.name;
+        val = nextObj.init === null ? null : getVal(nextObj.init);
+        addToTable(line, type, name, '', val);
     }
 }
 
@@ -138,7 +141,7 @@ function binaryExpression(exp){
 function callExpression(exp){
     let func = exp.callee.name.concat('(');
     for(let i = 0; i < exp.arguments.length; ++i){
-        func = func.concat(objMap(exp.arguments[i]).toString());
+        func = func.concat(getVal(exp.arguments[i]).toString());
         if (i+1 < exp.arguments.length)
             func.concat(', ');
     }
@@ -156,11 +159,20 @@ function ifStatement(obj){
     let line, cond, type = 'If Statement', alternate = obj.alternate;
     line = getLine(obj);
     cond = getVal(obj.test);
-    window.alert('cond: ' + cond);
     addToTable(line, type, '', cond, '');
     objMap(obj.consequent);
     if(alternate !== null)
-        alternate.type === 'IfStatement' ? objMap(alternate) : elseStatement(alternate);
+        alternate.type === 'IfStatement' ? elseIfStatement(alternate) : elseStatement(alternate);
+}
+
+function elseIfStatement(obj) {
+    let line, cond, type = 'Else If Statement', alternate = obj.alternate;
+    line = getLine(obj);
+    cond = getVal(obj.test);
+    addToTable(line, type, '', cond, '');
+    objMap(obj.consequent);
+    if(alternate !== null)
+        alternate.type === 'IfStatement' ? elseIfStatement(alternate) : elseStatement(alternate);
 }
 
 function blockStatement(obj){
@@ -169,7 +181,7 @@ function blockStatement(obj){
 }
 
 function elseStatement (obj){
-    let line, type = 'if Statement';
+    let line, type = 'Else Statement';
     line = getLine(obj);
     addToTable(line, type, '', '', '');
     objMap(obj);
