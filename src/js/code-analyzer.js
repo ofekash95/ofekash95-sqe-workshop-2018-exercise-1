@@ -6,50 +6,12 @@ const parseCode = (codeToParse) => {
 
 export {parseCode};
 export {program};
-export {displayTable};
 export {arr};
 
 let arr = [];
-let alreadyDisplayed = false;
 
 function addToTable(line, type, name, cond, val){
     arr = arr.concat({'Line' : line.toString(), 'Type' : type, 'Name' : name, 'Condition' : cond, 'Value' : val});
-}
-function displayTable(){
-    alreadyDisplayed ? document.getElementById('dataOfProgram').remove() : alreadyDisplayed = true;
-    let body = document.getElementsByTagName('body')[0], table = document.createElement('table');
-    table.setAttribute('class', 'dataOfProgram');
-    table.setAttribute('id', 'dataOfProgram');
-    let tableBody = document.createElement('table_body');
-    tableBody.setAttribute('class', 'dataOfProgram');
-    tableBody.appendChild(addTitles());
-    for(let i = 0; i < arr.length; ++i)
-        tableBody.appendChild(addTuple(arr[i]));
-    table.appendChild(tableBody);
-    body.appendChild(table);
-    window.alert(JSON.stringify(arr));
-}
-
-function addTuple(tuple){
-    let tupleArr = [tuple.Line, tuple.Type, tuple.Name, tuple.Condition, tuple.Value];
-    let tr = document.createElement('tr');
-    for(let i = 0; i < 5; ++i){
-        let td = document.createElement('td')
-        td.appendChild(document.createTextNode(tupleArr[i]));
-        tr.appendChild(td);
-    }
-    return tr;
-}
-
-function addTitles(){
-    let titleArr = ['Line', 'Type', 'Name', 'Condition', 'Value'];
-    let tr = document.createElement('tr');
-    for(let i = 0; i < 5; ++i){
-        let th = document.createElement('th');
-        th.appendChild(document.createTextNode(titleArr[i]));
-        tr.appendChild(th);
-    }
-    return tr;
 }
 
 function objMap (nextObj) {
@@ -131,11 +93,7 @@ function unaryExpression(exp){
 
 function binaryExpression(exp){
     let op = exp.operator, valLeft = getVal(exp.left), valRight = getVal(exp.right);
-    if(exp.left.type === 'BinaryExpression')
-        valLeft = '('.concat(valLeft).concat(')');
-    if(exp.right.type === 'BinaryExpression')
-        valRight = '('.concat(valRight).concat(')');
-    return ((valLeft.toString()).concat(op)).concat(valRight.toString());
+    return '('.concat(valLeft.toString()).concat(op).concat(valRight.toString()).concat(')');
 }
 
 function callExpression(exp){
@@ -205,8 +163,9 @@ function forStatement(obj){
     objMap(obj.body);
 }
 
-function logicalExpression(test){
-    return binaryExpression(test);
+function logicalExpression(exp){
+    let op = exp.operator, valLeft = getVal(exp.left), valRight = getVal(exp.right);
+    return valLeft.toString().concat(op).concat(valRight.toString());
 }
 
 function getVal(obj){
