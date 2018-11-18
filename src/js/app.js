@@ -1,6 +1,5 @@
 import $ from 'jquery';
-import {arr, parseCode} from './code-analyzer';
-import {program} from './code-analyzer';
+import {parseCode, program, arr} from './code-analyzer';
 
 
 $(document).ready(function () {
@@ -13,28 +12,26 @@ $(document).ready(function () {
     });
 });
 
-
 let alreadyDisplayed = false;
 
 function displayTable(){
     alreadyDisplayed ? document.getElementById('dataOfProgram').remove() : alreadyDisplayed = true;
-    let body = document.getElementsByTagName('body')[0], table = document.createElement('table');
+    let body = document.getElementsByTagName('body')[0], table = document.createElement('table'),
+        tableBody = document.createElement('table_body');
     table.setAttribute('class', 'dataOfProgram');
     table.setAttribute('id', 'dataOfProgram');
-    let tableBody = document.createElement('table_body');
     tableBody.setAttribute('class', 'dataOfProgram');
     tableBody.appendChild(addTitles());
     for(let i = 0; i < arr.length; ++i)
         tableBody.appendChild(addTuple(arr[i]));
     table.appendChild(tableBody);
     body.appendChild(table);
-    window.alert(JSON.stringify(arr));
 }
 
 function addTuple(tuple){
-    let tupleArr = [tuple.Line, tuple.Type, tuple.Name, tuple.Condition, tuple.Value];
-    let tr = document.createElement('tr');
-    for(let i = 0; i < 5; ++i){
+    let tupleArr = [tuple.Line, tuple.Type, tuple.Name, tuple.Condition, tuple.Value],
+        tr = document.createElement('tr');
+    for(let i = 0; i < tupleArr.length; ++i){
         let td = document.createElement('td')
         td.appendChild(document.createTextNode(tupleArr[i]));
         tr.appendChild(td);
@@ -43,9 +40,8 @@ function addTuple(tuple){
 }
 
 function addTitles(){
-    let titleArr = ['Line', 'Type', 'Name', 'Condition', 'Value'];
-    let tr = document.createElement('tr');
-    for(let i = 0; i < 5; ++i){
+    let titleArr = ['Line', 'Type', 'Name', 'Condition', 'Value'], tr = document.createElement('tr');
+    for(let i = 0; i < titleArr.length; ++i){
         let th = document.createElement('th');
         th.appendChild(document.createTextNode(titleArr[i]));
         tr.appendChild(th);
