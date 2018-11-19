@@ -32,7 +32,7 @@ function addTuple(tuple){
     let tupleArr = [tuple.Line, tuple.Type, tuple.Name, tuple.Condition, tuple.Value],
         tr = document.createElement('tr');
     for(let i = 0; i < tupleArr.length; ++i){
-        let td = document.createElement('td')
+        let td = document.createElement('td');
         td.appendChild(document.createTextNode(tupleArr[i]));
         tr.appendChild(td);
     }
